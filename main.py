@@ -33,7 +33,8 @@ def download_txt(book_id, filename, folder='books'):
 def download_image(book_id, image_url, folder="images/"):
     response = requests.get(image_url)
     response.raise_for_status()
-    with open(os.path.join(folder, f"{book_id}{get_file_type(image_url)}"), "wb") as file:
+    path = os.path.join(folder, f"{book_id}{get_file_type(image_url)}")
+    with open(path, "wb") as file:
         file.write(response.content)
 
 
