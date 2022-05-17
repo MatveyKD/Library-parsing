@@ -14,26 +14,20 @@ def get_file_type(url):
     return os.path.splitext(urlparse(url).path)[1]
 
 
-def check_for_redirect(book_id):
-    url = "https://tululu.org/txt.php"
-    response = requests.get(
-        url,
-        params={"id":book_id}
-    )
-    response.raise_for_status()
+def check_for_redirect(response):
     if response.history:
         raise requests.HTTPError("Page was redirected to Main library page.")
 
 def download_txt(book_id, filename, folder='books'):
     book_url = f'https://tululu.org/txt.php'
-    response_from_loading_book = requests.get(
+    response = requests.get(
         book_url,
         params={"id":book_id}
     )
-    response_from_loading_book.raise_for_status()
+    response.raise_for_status()
 
     with open(os.path.join(folder, filename).replace("\\", os.sep), "w", encoding="UTF-8") as file:
-        file.write(response_from_loading_book.text)
+        file.write(response.text)
 
 
 def download_image(book_id, image_url, folder="images/"):
@@ -95,7 +89,13 @@ def main():
     for book_id in range(args.start_id, args.end_id):
         while True:
             try:
-                check_for_redirect(book_id)
+                url = "https://tululu.org/txt.php"
+                response = requests.get(
+                    url,
+                    params={"id":book_id}
+                )
+                response.raise_for_status()
+                check_for_redirect(response)
 
                 url = f'https://tululu.org/b{book_id}/'
                 book_params = parse_book_page(url)
@@ -115,4 +115,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
