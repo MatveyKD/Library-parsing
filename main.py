@@ -26,7 +26,7 @@ def download_txt(book_id, filename, folder='books'):
     )
     response.raise_for_status()
 
-    with open(os.path.join(folder, filename).replace("\\", os.sep), "w", encoding="UTF-8") as file:
+    with open(os.path.join(folder, filename), "w", encoding="UTF-8") as file:
         file.write(response.text)
 
 
