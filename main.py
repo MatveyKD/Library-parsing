@@ -92,7 +92,6 @@ def main():
     )
     args = parser.parse_args()
 
-    connection_failed = False
     for book_id in range(args.start_id, args.end_id):
         while True:
             try:
@@ -116,3 +115,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
