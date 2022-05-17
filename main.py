@@ -38,10 +38,7 @@ def download_image(book_id, image_url, folder="images/"):
         file.write(response.content)
 
 
-def parse_book_page(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    
+def parse_book_page(url, response):    
     soup = BeautifulSoup(response.text, 'lxml')
 
     a = soup.find("div", id="content")
@@ -99,7 +96,9 @@ def main():
                 check_for_redirect(response)
 
                 url = f'https://tululu.org/b{book_id}/'
-                book_params = parse_book_page(url)
+                response = requests.get(url)
+                response.raise_for_status()
+                book_params = parse_book_page(url, response)
 
                 filename = f"{book_id}. {sanitize_filename(book_params['title'])}.txt"
 
