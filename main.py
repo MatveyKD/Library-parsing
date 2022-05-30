@@ -112,7 +112,7 @@ def main():
                 os.remove(image_path)
 
     book_id = 0
-    books_params = {"books": []}
+    books_params = []
     if args.end_page == 0:
         args.end_page = args.start_page+1
     for page in range(args.start_page, args.end_page):
@@ -142,7 +142,7 @@ def main():
                         image_path = download_image(book_id, book_params["image_url"])
                     else: image_path = None
                     
-                    books_params["books"].append({
+                    books_params.append({
                         "title": book_params["title"],
                         "author": book_params["author"],
                         "image_path": image_path,
