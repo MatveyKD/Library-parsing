@@ -71,14 +71,6 @@ def main():
     os.makedirs("books", exist_ok=True)
     os.makedirs("images", exist_ok=True)
 
-    for dirpath, dirnames, filenames in os.walk("books"):
-        for filename in filenames:
-            book_path = os.path.join(dirpath, filename)
-            os.remove(book_path)
-    for dirpath, dirnames, filenames in os.walk("images"):
-        for filename in filenames:
-            image_path = os.path.join(dirpath, filename)
-            os.remove(image_path)
 
     parser = argparse.ArgumentParser(
         description='Скачивание книг и информации о них'
@@ -96,14 +88,28 @@ def main():
         action='store_true',
     )
     parser.add_argument(
-        '--skip_txt', help='Пропускать ли скачивание книги',
+        '--skip_txt', help='Пропускать ли скачивание книг',
         action='store_true',
     )
     parser.add_argument(
         '--json_path', help='Путь к .json файлу с результатами',
         default="books_params.json"
     )
+    parser.add_argument(
+        '--del_old', help='Удалять ли давно скаченные книги',
+        action='store_true',
+    )
     args = parser.parse_args()
+    
+    if args.del_old:
+        for dirpath, dirnames, filenames in os.walk("books"):
+            for filename in filenames:
+                book_path = os.path.join(dirpath, filename)
+                os.remove(book_path)
+        for dirpath, dirnames, filenames in os.walk("images"):
+            for filename in filenames:
+                image_path = os.path.join(dirpath, filename)
+                os.remove(image_path)
 
     book_id = 0
     books_params = {"books": []}
@@ -118,6 +124,7 @@ def main():
         for book_tag in books_tags:
             book_href = book_tag.select_one("a")["href"]
             book_url = urljoin("https://tululu.org", book_href)
+            print(book_url)
             while True:
                 try:         
                     response = requests.get(book_url)
@@ -161,4 +168,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
