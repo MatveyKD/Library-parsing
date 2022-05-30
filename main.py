@@ -69,10 +69,6 @@ def parse_book_page(url, response):
     }
     
 def main():
-    os.makedirs("books", exist_ok=True)
-    os.makedirs("images", exist_ok=True)
-
-
     parser = argparse.ArgumentParser(
         description='Скачивание книг и информации о них'
     )
@@ -97,17 +93,26 @@ def main():
         default="books_params.json"
     )
     parser.add_argument(
+        '--dest_fold', help='Путь к папке с книгами, картинками и JSON',
+        default=""
+    )
+    parser.add_argument(
         '--del_old', help='Удалять ли давно скаченные книги',
         action='store_true',
     )
     args = parser.parse_args()
+
+    books_folder = os.path.join(args.dest_fold, "books")
+    img_folder = os.path.join(args.dest_fold, "images")
+    os.makedirs(books_folder, exist_ok=True)
+    os.makedirs(img_folder, exist_ok=True)
     
     if args.del_old:
-        for dirpath, dirnames, filenames in os.walk("books"):
+        for dirpath, dirnames, filenames in os.walk(books_folder):
             for filename in filenames:
                 book_path = os.path.join(dirpath, filename)
                 os.remove(book_path)
-        for dirpath, dirnames, filenames in os.walk("images"):
+        for dirpath, dirnames, filenames in os.walk(img_folder):
             for filename in filenames:
                 image_path = os.path.join(dirpath, filename)
                 os.remove(image_path)
@@ -142,10 +147,10 @@ def main():
                     book_filename = f"{book_id}. {sanitize_filename(book_params['title'])}.txt"
 
                     if not args.skip_txt:
-                        book_path = download_txt(txt_url, book_filename)
+                        book_path = download_txt(txt_url, book_filename, books_folder)
                     else: book_path = None
                     if not args.skip_img:
-                        image_path = download_image(book_id, book_params["image_url"])
+                        image_path = download_image(book_id, book_params["image_url"], img_folder)
                     else: image_path = None
                         
                     books_params.append({
@@ -168,7 +173,7 @@ def main():
             except requests.ConnectionError as error:
                 logging.error(error)
                 time.sleep(3)
-    with open(args.json_path, "w") as file:
+    with open(os.path.join(args.dest_fold, args.json_path), "w") as file:
         file.write(json.dumps(books_params, ensure_ascii=False))
 
 
