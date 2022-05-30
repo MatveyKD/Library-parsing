@@ -42,8 +42,8 @@ def download_image(book_id, image_url, folder="images/"):
 def parse_book_page(url, response):    
     soup = BeautifulSoup(response.text, 'lxml')
 
-    title_tag = soup.select("h1")
-    title, author = title_tag[0].text.split("::")
+    title_tag = soup.select_one("h1")
+    title, author = title_tag.text.split("::")
     title, author = title.strip(), author.strip()
 
     comments_tags = soup.select(".texts span")
@@ -52,11 +52,11 @@ def parse_book_page(url, response):
     genres_tags = soup.select("span.d_book a")
     genres = list(map(lambda x: x.text, genres_tags))
 
-    image_tag = soup.select(".bookimage a img")
-    image_url = urljoin(url, image_tag[0]["src"])
+    image_tag = soup.select_one(".bookimage a img")
+    image_url = urljoin(url, image_tag["src"])
 
-    txt_tag = soup.select(".d_book tr a")
-    txt_url = urljoin(url, txt_tag[8]["href"])
+    txt_tag = soup.select_one('[title*="скачать книгу txt"]')
+    txt_url = urljoin(url, txt_tag["href"])
 
 
     return {
@@ -134,45 +134,52 @@ def main():
                 soup = BeautifulSoup(response.text, 'lxml')
                 books_tags = soup.select(".d_book")
                 for book_tag in books_tags:
-                    book_href = book_tag.select_one("a")["href"]
-                    book_url = urljoin("https://tululu.org", book_href)
-                    print(book_url)
-       
-                    response = requests.get(book_url)
-                    response.raise_for_status()
-                    check_for_redirect(response)
-                    book_params = parse_book_page(book_url, response)
-                    txt_url = book_params["txt_url"]
+                    try:
+                        book_href = book_tag.select_one("a")["href"]
+                        book_url = urljoin("https://tululu.org", book_href)
+                        print(book_url)
+           
+                        response = requests.get(book_url)
+                        response.raise_for_status()
+                        check_for_redirect(response)
+                        book_params = parse_book_page(book_url, response)
+                        txt_url = book_params["txt_url"]
 
-                    book_filename = f"{book_id}. {sanitize_filename(book_params['title'])}.txt"
+                        book_filename = f"{book_id}. {sanitize_filename(book_params['title'])}.txt"
 
-                    if not args.skip_txt:
-                        book_path = download_txt(txt_url, book_filename, books_folder)
-                    else: book_path = None
-                    if not args.skip_img:
-                        image_path = download_image(book_id, book_params["image_url"], img_folder)
-                    else: image_path = None
-                        
-                    books_params.append({
-                        "title": book_params["title"],
-                        "author": book_params["author"],
-                        "image_path": image_path,
-                        "book_path": book_path,
-                        "comments": book_params["comments"],
-                        "genres": book_params["genres"],
-                    })
-                        
-                    book_id += 1
+                        if not args.skip_txt:
+                            book_path = download_txt(txt_url, book_filename, books_folder)
+                        else: book_path = None
+                        if not args.skip_img:
+                            image_path = download_image(book_id, book_params["image_url"], img_folder)
+                        else: image_path = None
+                            
+                        books_params.append({
+                            "title": book_params["title"],
+                            "author": book_params["author"],
+                            "image_path": image_path,
+                            "book_path": book_path,
+                            "comments": book_params["comments"],
+                            "genres": book_params["genres"],
+                        })
+                            
+                        book_id += 1
+                    except requests.HTTPError as error:
+                        logging.warning(error)
+                        break
+                    except TypeError:
+                        logging.warning("Book hasn't url for loading")
+                    except requests.ConnectionError as error:
+                        logging.error(error)
+                        time.sleep(3)
                 break
             except requests.HTTPError as error:
                 logging.warning(error)
                 break
-            except IndexError:
-                logging.warning("Book hasn't url for loading")
-                break
             except requests.ConnectionError as error:
                 logging.error(error)
                 time.sleep(3)
+
     with open(os.path.join(args.dest_fold, args.json_path), "w") as file:
         file.write(json.dumps(books_params, ensure_ascii=False))
 
