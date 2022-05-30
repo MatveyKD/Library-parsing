@@ -22,6 +22,7 @@ def check_for_redirect(response):
 def download_txt(txt_url, filename, folder='books/'):
     response = requests.get(txt_url)
     response.raise_for_status()
+    check_for_redirect(response)
 
     path = os.path.join(folder, filename)
     with open(path, "w", encoding="UTF-8") as file:
@@ -118,13 +119,16 @@ def main():
     for page in range(args.start_page, args.end_page):
         response = requests.get(f"https://tululu.org/l55/{page}")
         response.raise_for_status()
+        try:
+            check_for_redirect(response)
+        except requests.HTTPError as error:
+            logging.warning(error)
 
         soup = BeautifulSoup(response.text, 'lxml')
         books_tags = soup.select(".d_book")
         for book_tag in books_tags:
             book_href = book_tag.select_one("a")["href"]
             book_url = urljoin("https://tululu.org", book_href)
-            print(book_url)
             while True:
                 try:         
                     response = requests.get(book_url)
