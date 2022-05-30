@@ -117,20 +117,22 @@ def main():
     if args.end_page == 0:
         args.end_page = args.start_page+1
     for page in range(args.start_page, args.end_page):
-        response = requests.get(f"https://tululu.org/l55/{page}")
-        response.raise_for_status()
-        try:
-            check_for_redirect(response)
-        except requests.HTTPError as error:
-            logging.warning(error)
+        while True:
+            try:
+                response = requests.get(f"https://tululu.org/l55/{page}")
+                response.raise_for_status()
+                try:
+                    check_for_redirect(response)
+                except requests.HTTPError as error:
+                    logging.warning(error)
 
-        soup = BeautifulSoup(response.text, 'lxml')
-        books_tags = soup.select(".d_book")
-        for book_tag in books_tags:
-            book_href = book_tag.select_one("a")["href"]
-            book_url = urljoin("https://tululu.org", book_href)
-            while True:
-                try:         
+                soup = BeautifulSoup(response.text, 'lxml')
+                books_tags = soup.select(".d_book")
+                for book_tag in books_tags:
+                    book_href = book_tag.select_one("a")["href"]
+                    book_url = urljoin("https://tululu.org", book_href)
+                    print(book_url)
+       
                     response = requests.get(book_url)
                     response.raise_for_status()
                     check_for_redirect(response)
@@ -145,7 +147,7 @@ def main():
                     if not args.skip_img:
                         image_path = download_image(book_id, book_params["image_url"])
                     else: image_path = None
-                    
+                        
                     books_params.append({
                         "title": book_params["title"],
                         "author": book_params["author"],
@@ -154,18 +156,18 @@ def main():
                         "comments": book_params["comments"],
                         "genres": book_params["genres"],
                     })
-                    
+                        
                     book_id += 1
-                    break
-                except requests.HTTPError as error:
-                    logging.warning(error)
-                    break
-                except IndexError:
-                    logging.warning("Book hasn't url for loading")
-                    break
-                except requests.ConnectionError as error:
-                    logging.error(error)
-                    time.sleep(3)
+                break
+            except requests.HTTPError as error:
+                logging.warning(error)
+                break
+            except IndexError:
+                logging.warning("Book hasn't url for loading")
+                break
+            except requests.ConnectionError as error:
+                logging.error(error)
+                time.sleep(3)
     with open(args.json_path, "w") as file:
         file.write(json.dumps(books_params, ensure_ascii=False))
 
