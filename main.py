@@ -73,8 +73,8 @@ def del_old(directory):
         for filename in filenames:
             file_path = os.path.join(dirpath, filename)
             os.remove(file_path)
-    
-def main():
+
+def add_args():
     parser = argparse.ArgumentParser(
         description='Скачивание книг и информации о них'
     )
@@ -107,6 +107,11 @@ def main():
         action='store_true',
     )
     args = parser.parse_args()
+
+    return args
+
+def main():
+    args = add_args()
 
     books_folder = os.path.join(args.dest_fold, "books")
     img_folder = os.path.join(args.dest_fold, "images")
