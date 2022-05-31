@@ -67,6 +67,12 @@ def parse_book_page(url, response):
         "image_url": image_url,
         "txt_url": txt_url
     }
+
+def del_old(directory):
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            os.remove(file_path)
     
 def main():
     parser = argparse.ArgumentParser(
@@ -108,14 +114,8 @@ def main():
     os.makedirs(img_folder, exist_ok=True)
     
     if args.del_old:
-        for dirpath, dirnames, filenames in os.walk(books_folder):
-            for filename in filenames:
-                book_path = os.path.join(dirpath, filename)
-                os.remove(book_path)
-        for dirpath, dirnames, filenames in os.walk(img_folder):
-            for filename in filenames:
-                image_path = os.path.join(dirpath, filename)
-                os.remove(image_path)
+        del_old(books_folder)
+        del_old(img_folder)
 
     book_id = 0
     books_params = []
@@ -186,3 +186,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
