@@ -131,10 +131,7 @@ def main():
             try:
                 response = requests.get(f"https://tululu.org/l55/{page}")
                 response.raise_for_status()
-                try:
-                    check_for_redirect(response)
-                except requests.HTTPError as error:
-                    logging.warning(error)
+                check_for_redirect(response)
 
                 soup = BeautifulSoup(response.text, 'lxml')
                 books_tags = soup.select(".d_book")
@@ -191,4 +188,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
