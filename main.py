@@ -150,10 +150,12 @@ def main():
 
                         if not args.skip_txt:
                             book_path = download_txt(txt_url, book_filename, books_folder)
-                        else: book_path = None
+                        else:
+                            book_path = None
                         if not args.skip_img:
                             image_path = download_image(book_id, book_params["image_url"], img_folder)
-                        else: image_path = None
+                        else:
+                            image_path = None
                             
                         books_params.append({
                             "title": book_params["title"],
