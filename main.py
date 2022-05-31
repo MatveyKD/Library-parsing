@@ -139,7 +139,6 @@ def main():
                     try:
                         book_href = book_tag.select_one("a")["href"]
                         book_url = urljoin("https://tululu.org", book_href)
-                        print(book_url)
            
                         response = requests.get(book_url)
                         response.raise_for_status()
