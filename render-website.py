@@ -5,7 +5,6 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
 from more_itertools import chunked
 
-
 def on_reload():
     env = Environment(
         loader=FileSystemLoader('.'),
@@ -18,13 +17,16 @@ def on_reload():
     with open("books_params.json", "r") as file:
         books_params = json.loads(file.read())
 
-    print(list(chunked(books_params, 2))[1])
-    rendered_page = template.render(
-        books_params=list(chunked(books_params, 2))
-    )
+    chunked_books = list(chunked(list(chunked(books_params, 2)), 10))
+    print(chunked_books)
 
-    with open('index.html', 'w', encoding="utf8") as file:
-        file.write(rendered_page)
+    for index, books in enumerate(chunked_books):
+        rendered_page = template.render(
+            books_params=books
+        )
+
+        with open(f'pages/index{index}.html', 'w', encoding="utf8") as file:
+            file.write(rendered_page)
 
 on_reload()
 
