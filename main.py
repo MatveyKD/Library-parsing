@@ -24,7 +24,7 @@ def download_txt(txt_url, filename, folder='books/'):
     response.raise_for_status()
     check_for_redirect(response)
 
-    path = os.path.join(folder, filename)
+    path = os.path.join(folder, filename).replace("\\", os.sep)
     with open(path, "w", encoding="UTF-8") as file:
         file.write(response.text)
     return path
@@ -33,7 +33,7 @@ def download_txt(txt_url, filename, folder='books/'):
 def download_image(book_id, image_url, folder="images/"):
     response = requests.get(image_url)
     response.raise_for_status()
-    path = os.path.join(folder, f"{book_id}{get_file_type(image_url)}")
+    path = os.path.join(folder, f"{book_id}{get_file_type(image_url)}").replace("\\", os.sep)
     with open(path, "wb") as file:
         file.write(response.content)
     return path

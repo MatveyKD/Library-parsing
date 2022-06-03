@@ -3,6 +3,7 @@ from livereload import Server
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import json
+from more_itertools import chunked
 
 
 def on_reload():
@@ -17,14 +18,15 @@ def on_reload():
     with open("books_params.json", "r") as file:
         books_params = json.loads(file.read())
 
-
+    print(list(chunked(books_params, 2))[1])
     rendered_page = template.render(
-        books_params=books_params
+        books_params=list(chunked(books_params, 2))
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
         file.write(rendered_page)
 
+on_reload()
 
 server = Server()
 server.watch('template.html', on_reload)
