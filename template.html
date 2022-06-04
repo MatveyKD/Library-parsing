@@ -11,27 +11,29 @@
     <title>Books</title>
   </head>
   <body>
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        {% if cur_page != 1 %}
-          <li class="page-item"><a class="page-link" href=./index{{cur_page-1}}.html>Назад</a></li>
-        {% else %}
-          <li class="page-item"><a class="page-link" style="pointer-events:none" href=./index{{cur_page-1}}.html>Назад</a></li>
-        {% endif %}
-        {% for page in range(1, all_pages+1) %}
-          {% if page != cur_page %}
-            <li class="page-item"><a class="page-link" href=./index{{page}}.html>{{ page }}</a></li>
+    <div class="mx-auto" style="width: 500px; margin-top: 30px;">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {% if cur_page != 1 %}
+            <li class="page-item"><a class="page-link" href=./index{{cur_page-1}}.html>Назад</a></li>
           {% else %}
-            <li class="page-item active"><a class="page-link" href=./index{{page}}.html>{{ page }}</a></li>
+            <li class="page-item"><a class="page-link" style="pointer-events:none" href=./index{{cur_page-1}}.html>Назад</a></li>
           {% endif %}
-        {% endfor %}
-        {% if cur_page < all_pages %}
-          <li class="page-item"><a class="page-link" href=./index{{cur_page+1}}.html>Вперёд</a></li>
-        {% else %}
-          <li class="page-item"><a class="page-link" style="pointer-events:none" href=./index{{cur_page+1}}.html>Вперёд</a></li>
-        {% endif %}
-      </ul>
-    </nav>
+          {% for page in range(1, all_pages+1) %}
+            {% if page != cur_page %}
+              <li class="page-item"><a class="page-link" href=./index{{page}}.html>{{ page }}</a></li>
+            {% else %}
+              <li class="page-item active"><a class="page-link" href=./index{{page}}.html>{{ page }}</a></li>
+            {% endif %}
+          {% endfor %}
+          {% if cur_page < all_pages %}
+            <li class="page-item"><a class="page-link" href=./index{{cur_page+1}}.html>Вперёд</a></li>
+          {% else %}
+            <li class="page-item"><a class="page-link" style="pointer-events:none" href=./index{{cur_page+1}}.html>Вперёд</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
     <div class="container">
       {% for two_books in books_params %}
         <div class="row">
