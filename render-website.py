@@ -20,11 +20,11 @@ def on_reload():
 
     chunked_books = list(chunked(list(chunked(books_params, 2)), 10))
 
-    for index, books in enumerate(chunked_books):
+    for index, books in enumerate(chunked_books, start=1):
         rendered_page = template.render(
             books_params=books,
             all_pages=ceil(len(books_params) / 20),
-            cur_page=index+1
+            cur_page=index
         )
 
         with open(f'pages/index{index+1}.html', 'w', encoding="utf8") as file:
