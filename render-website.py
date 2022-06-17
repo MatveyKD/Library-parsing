@@ -16,7 +16,7 @@ def on_reload():
 
 
     with open("books_params.json", "r") as file:
-        books_params = json.loads(file.read())
+        books_params = json.load(file)
 
     chunked_books = list(chunked(list(chunked(books_params, 2)), 10))
 
