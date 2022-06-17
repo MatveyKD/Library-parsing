@@ -15,19 +15,24 @@ def on_reload():
     template = env.get_template('template.html')
 
 
-    with open("books_params.json", "r") as file:
-        books_params = json.load(file)
+    with open("books_params.json", "r", encoding="UTF8") as file:
+        books_params = json.loads(file.read())
 
-    chunked_books = list(chunked(list(chunked(books_params, 2)), 10))
 
-    for index, books in enumerate(chunked_books, start=1):
+    per_column = 10
+    per_line = 2
+    per_page = per_column * per_line
+    chunked_books = list(chunked(list(chunked(books_params, per_line)), per_column))
+
+    for index, books in enumerate(chunked_books):
+        print(books[1][0]["book_path"])
         rendered_page = template.render(
             books_params=books,
-            all_pages=ceil(len(books_params) / 20),
-            cur_page=index
+            all_pages=ceil(len(books_params) / per_page),
+            cur_page=index+1
         )
 
-        with open(f'pages/index{index+1}.html', 'w', encoding="utf8") as file:
+        with open(f'pages/index{index+1}.html', 'w', encoding="UTF-8") as file:
             file.write(rendered_page)
 
 on_reload()
