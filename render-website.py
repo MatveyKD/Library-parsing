@@ -24,12 +24,11 @@ def on_reload():
     per_page = per_column * per_line
     chunked_books = list(chunked(list(chunked(books_params, per_line)), per_column))
 
-    for index, books in enumerate(chunked_books):
-        print(books[1][0]["book_path"])
+    for index, books in enumerate(chunked_books, start=1):
         rendered_page = template.render(
             books_params=books,
             all_pages=ceil(len(books_params) / per_page),
-            cur_page=index+1
+            cur_page=index
         )
 
         with open(f'pages/index{index+1}.html', 'w', encoding="UTF-8") as file:
