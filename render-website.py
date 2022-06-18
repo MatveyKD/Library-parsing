@@ -16,7 +16,7 @@ def on_reload():
 
 
     with open("books_params.json", "r", encoding="UTF8") as file:
-        books_params = json.loads(file.read())
+        books_params = json.load(file)
 
 
     per_column = 10
