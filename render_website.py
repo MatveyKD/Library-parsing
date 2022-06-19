@@ -31,7 +31,7 @@ def on_reload():
             cur_page=index
         )
 
-        with open(f'pages/index{index+1}.html', 'w', encoding="UTF-8") as file:
+        with open(f'pages/index{index}.html', 'w', encoding="UTF-8") as file:
             file.write(rendered_page)
 
 on_reload()
